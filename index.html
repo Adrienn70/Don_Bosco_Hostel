@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -14,55 +14,49 @@
     <style>
         html, body {
             background-color: #ffffff;
-            margin: 0; /* Très important pour le positionnement de l'iframe */
+        }
+        .ol-control > * {
+            background-color: #f8f8f8!important;
+            color: #444444!important;
+            border-radius: 0px;
+        }
+        .ol-attribution a, .gcd-gl-input::placeholder, .search-layer-input-search::placeholder {
+            color: #444444!important;
+        }
+        .search-layer-input-search {
+            background-color: #f8f8f8!important;
+        }
+        .ol-control > *:focus, .ol-control >*:hover {
+            background-color: rgba(248, 248, 248, 0.7)!important;
+        }
+        .ol-control {
+            background-color: rgba(255,255,255,.4) !important;
+            padding: 2px !important;
         }
         #map {
             width: 1331px;
             height: 778px;
         }
-        /* Styles pour le popup */
-        .ol-popup {
+        /* Styles pour la légende */
+        .ol-legend {
             position: absolute;
+            bottom: 10px;
+            left: 10px;
             background-color: white;
-            -webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
-            filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
-            padding: 15px;
-            border-radius: 10px;
-            border: 1px solid #cccccc;
-            bottom: 12px;
-            left: -50px;
-            min-width: 280px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            z-index: 1000;
         }
-        .ol-popup:after, .ol-popup:before {
-            top: 100%;
-            border: solid transparent;
-            content: " ";
-            height: 0;
-            width: 0;
-            position: absolute;
-            pointer-events: none;
-            bottom: -1px;
-            left: 50%;
-            margin-left: -8px;
+        .ol-legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
         }
-        .ol-popup:after {
-            border-top-color: white;
-            border-width: 8px;
-            margin-left: -8px;
-        }
-        .ol-popup:before {
-            border-top-color: #cccccc;
-            border-width: 9px;
-            margin-left: -9px;
-        }
-        .ol-popup-closer {
-            text-decoration: none;
-            position: absolute;
-            top: 2px;
-            right: 8px;
-        }
-        .ol-popup-closer:after {
-            content: "x";
+        .ol-legend-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
         }
     </style>
     <title></title>
@@ -74,7 +68,6 @@
             <div id="popup-content"></div>
         </div>
     </div>
-    <iframe src="legende.html" style="position: absolute; bottom: 10px; left: 10px; border: none; z-index: 1000; width: auto; height: auto; overflow: hidden;"></iframe>
     <script src="resources/qgis2web_expressions.js"></script>
     <script src="resources/proj4.js"></script>
     <script>proj4.defs('EPSG:32645','+proj=utm +zone=45 +datum=WGS84 +units=m +no_defs');</script>
@@ -90,48 +83,22 @@
     <script src="./resources/Autolinker.min.js"></script>
     <script src="./resources/qgis2web.js"></script>
     <script>
-        var map = new ol.Map({
-            target: 'map',
-            layers: layersList,
-            view: new ol.View({
-                center: [9830846.12457471, 2561937.625686027],
-                zoom: 12,
-                maxZoom: 28,
-                projection: 'EPSG:32645'
-            })
-        });
+        // Création de la légende
+        var legend = document.createElement('div');
+        legend.className = 'ol-legend';
+        legend.innerHTML = '<h4>Légende</h4>' +
+                           '<div class="ol-legend-item">' +
+                           '<div class="ol-legend-icon" style="background-color: red;"></div>' +
+                           '<span>Foyers</span>' +
+                           '</div>' +
+                           '<div class="ol-legend-item">' +
+                           '<div class="ol-legend-icon" style="background-color: blue;"></div>' +
+                           '<span>Lieux Importants</span>' +
+                           '</div>';
 
-        // Code pour les popups (intégré ici)
-        var container = document.getElementById('popup');
-        var content = document.getElementById('popup-content');
-        var closer = document.getElementById('popup-closer');
-
-        var overlay = new ol.Overlay({
-            element: container,
-            autoPan: true,
-            autoPanAnimation: {
-                duration: 250
-            }
-        });
-        map.addOverlay(overlay);
-
-        closer.onclick = function() {
-            overlay.setPosition(undefined);
-            closer.blur();
-            return false;
-        };
-
-        map.on('singleclick', function (evt) {
-            var pixel = map.getEventPixel(evt.originalEvent);
-            var hit = map.forEachFeatureAtPixel(pixel, function (feature) {
-                return feature;
-            });
-            if (hit) {
-                var geometry = hit.getGeometry();
-                var coord = geometry.getCoordinates();
-                overlay.setPosition(coord);
-                content.innerHTML = '<h2>' + hit.get('name') + '</h2>'; // A MODIFIER si l'attribut n'est pas 'name'
-            }
+        // Ajout de la légende à la carte (après l'initialisation de la carte)
+        map.once('loadend', function() { // Assure que la carte est chargée avant d'ajouter la légende
+          map.getTargetElement().appendChild(legend);
         });
     </script>
 </body>
