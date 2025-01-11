@@ -37,27 +37,6 @@
             width: 1331px;
             height: 778px;
         }
-        /* Styles pour la légende */
-        .ol-legend {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            background-color: white;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            z-index: 1000;
-        }
-        .ol-legend-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 5px;
-        }
-        .ol-legend-icon {
-            width: 20px;
-            height: 20px;
-            margin-right: 5px;
-        }
     </style>
     <title></title>
 </head>
@@ -68,6 +47,7 @@
             <div id="popup-content"></div>
         </div>
     </div>
+    <iframe src="legende.html" style="position: absolute; bottom: 10px; left: 10px; border: none; z-index: 1000; width: auto; height: auto; overflow: hidden;"></iframe>
     <script src="resources/qgis2web_expressions.js"></script>
     <script src="resources/proj4.js"></script>
     <script>proj4.defs('EPSG:32645','+proj=utm +zone=45 +datum=WGS84 +units=m +no_defs');</script>
@@ -83,22 +63,15 @@
     <script src="./resources/Autolinker.min.js"></script>
     <script src="./resources/qgis2web.js"></script>
     <script>
-        // Création de la légende
-        var legend = document.createElement('div');
-        legend.className = 'ol-legend';
-        legend.innerHTML = '<h4>Légende</h4>' +
-                           '<div class="ol-legend-item">' +
-                           '<div class="ol-legend-icon" style="background-color: red;"></div>' +
-                           '<span>Foyers</span>' +
-                           '</div>' +
-                           '<div class="ol-legend-item">' +
-                           '<div class="ol-legend-icon" style="background-color: blue;"></div>' +
-                           '<span>Lieux Importants</span>' +
-                           '</div>';
-
-        // Ajout de la légende à la carte (après l'initialisation de la carte)
-        map.once('loadend', function() { // Assure que la carte est chargée avant d'ajouter la légende
-          map.getTargetElement().appendChild(legend);
+        var map = new ol.Map({
+            target: 'map',
+            layers: layersList,
+            view: new ol.View({
+                center: [9830846.12457471, 2561937.625686027],
+                zoom: 12,
+                maxZoom: 28,
+                projection: 'EPSG:32645'
+            })
         });
     </script>
 </body>
